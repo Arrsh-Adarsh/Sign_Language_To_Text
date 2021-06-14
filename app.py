@@ -17,10 +17,14 @@ class Main:
         self.current_image2 = None
         self.ct = {'blank': 0}
         self.blank_flag = 0
+        self.access = False
         for i in ascii_uppercase:
             self.ct[i] = 0
 
-        self.model = load_model(self.models_directory + 'Classifer_A_Z.h5')
+        self.model1 = load_model(self.models_directory + 'Classifier_A_Z_1.h5')
+        self.model2 = load_model(self.models_directory + 'Classifier_A_Z_2.h5')
+        self.model_mnst = load_model(self.models_directory + 'Classifier_mnst.h5')
+        self.model_kuvw = load_model(self.models_directory + 'Classifier_kuvw.h5')
 
         self.root = tk.Tk()
         self.root.title('Sign Language to Text Converter')
@@ -58,15 +62,15 @@ class Main:
         self.bt1.config(text='About', font=("times new roman", 15, "bold"))
         self.bt1.place(x=980, y=5)
 
-        self.bt2 = tk.Button(self.root, command=self.about, height=2, width=8, bg='#89ABD9')
+        self.bt2 = tk.Button(self.root, command=self.start, height=2, width=8, bg='#89ABD9')
         self.bt2.config(text='Start', font=("times new roman", 15, "bold"))
         self.bt2.place(x=920, y=200)
 
-        self.bt3 = tk.Button(self.root, command=self.about, height=2, width=8, bg='#88bde3')
+        self.bt3 = tk.Button(self.root, command=self.stop, height=2, width=8, bg='#88bde3')
         self.bt3.config(text='Stop', font=("times new roman", 15, "bold"))
         self.bt3.place(x=920, y=350)
 
-        self.bt4 = tk.Button(self.root, command=self.about, height=2, width=8, bg='#89ABD9')
+        self.bt4 = tk.Button(self.root, command=self.reset, height=2, width=8, bg='#89ABD9')
         self.bt4.config(text='Reset', font=("times new roman", 15, "bold"))
         self.bt4.place(x=920, y=500)
 
@@ -100,7 +104,8 @@ class Main:
 
             roi = frame[10:310, 335:635]
             img = image_processing(roi)
-            self.predicts(img)
+            if self.access:
+                self.predicts(img)
 
             self.current_image2 = Image.fromarray(img)
             imgtk = ImageTk.PhotoImage(image=self.current_image2)
@@ -111,15 +116,26 @@ class Main:
             self.panel4.config(text=self.word, font=("times new roman", 25, "bold"))
             self.panel5.config(text=self.sent, font=("times new roman", 25, "bold"))
 
-        self.root.after(30, self.display_video)
+        self.root.after(10, self.display_video)
 
     def predicts(self, image):
         image = cv2.resize(image, (128, 128))
-        result = np.argmax(self.model.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
-        print(result)
 
-        self.current_symbol = chr(result + 64)
-        if self.current_symbol == '@': self.current_symbol = 'blank'
+        list1 = []
+        list2 = ['A', 'B', 'C', 'D', 'E', 'F', 'K', 'L', 'O', 'V', 'Y']
+
+        result1 = np.argmax(self.model1.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+        result2 = np.argmax(self.model2.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+        result_mnst = np.argmax(self.model_mnst.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+        result_kuvw = np.argmax(self.model_kuvw.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+
+        self.current_symbol = chr(result2 + 64)
+        if self.current_symbol not in list2: self.current_symbol = chr(result1 + 64)
+        if self.current_symbol == '@':
+            self.current_symbol = 'blank'
+
+        # if self.current_symbol in ['K', 'U', 'V', 'W']: self.current_symbol = ['K', 'U', 'V', 'W'][result_kuvw]
+        if self.current_symbol in ['M', 'N', 'S', 'T']: self.current_symbol = ['M', 'N', 'S', 'T'][result_mnst]
 
         if self.current_symbol == 'blank':
             for i in ascii_uppercase:
@@ -155,6 +171,18 @@ class Main:
 
     def about(self):
         pass
+
+    def start(self):
+        self.access = True
+
+    def stop(self):
+        self.access = False
+
+    def reset(self):
+        self.sent = ''
+        self.word = ''
+        self.current_symbol = 'Empty'
+        self.access = False
 
 
 print('Application Starting...')

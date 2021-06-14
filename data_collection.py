@@ -52,20 +52,19 @@ while True:
     roi = frame[10:320, 350:620]
 
     # Processing image
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 2)
+    th3 = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    ret, image = cv2.threshold(th3, minValue, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-    # gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    # blur = cv2.GaussianBlur(gray, (5, 5), 2)
-    # th3 = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
-    # ret, test_image = cv2.threshold(th3, minValue, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-    image = image_processing(roi)
+    # image = image_processing(test_image)
     cv2.imshow('processed image', image)
     image = cv2.resize(image, (128, 128))
     img = image
 
     # Counting number of image in each folder
     # count = {
-    #     'zero': len(os.listdir(directory + "/0")),
+    #     'zero': len(os.listdir(directory + "/@")),
     #     'one': len(os.listdir(directory + "/1")),
     #     'two': len(os.listdir(directory + "/2")),
     #     'three': len(os.listdir(directory + "/3")),
