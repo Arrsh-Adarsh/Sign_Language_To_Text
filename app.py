@@ -21,10 +21,10 @@ class Main:
         for i in ascii_uppercase:
             self.ct[i] = 0
 
-        self.model1 = load_model(self.models_directory + 'Classifier_A_Z_1.h5')
-        self.model2 = load_model(self.models_directory + 'Classifier_A_Z_2.h5')
+        self.model1 = load_model(self.models_directory + 'Classifier_A_Z_5.h5')
+        self.model3 = load_model(self.models_directory + 'Classifier_A_Z_4.h5')
         self.model_mnst = load_model(self.models_directory + 'Classifier_mnst.h5')
-        self.model_kuvw = load_model(self.models_directory + 'Classifier_kuvw.h5')
+        self.model_dru = load_model(self.models_directory + 'Classifier_dru.h5')
 
         self.root = tk.Tk()
         self.root.title('Sign Language to Text Converter')
@@ -88,7 +88,7 @@ class Main:
 
     def destructor1(self):
         print("Closing Application...")
-        self.root.destroy()
+        self.root1.destroy()
 
     def display_video(self):
         ret, frame = self.vc.read()
@@ -121,34 +121,41 @@ class Main:
     def predicts(self, image):
         image = cv2.resize(image, (128, 128))
 
-        list1 = []
-        list2 = ['A', 'B', 'C', 'D', 'E', 'F', 'K', 'L', 'O', 'V', 'Y']
+        list1 = ['A', 'B', 'C', 'E', 'F', 'K', 'L', 'T', 'O', 'Q', 'P', 'S', 'T']
 
-        result1 = np.argmax(self.model1.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
-        result2 = np.argmax(self.model2.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+        result1 = chr(64 + np.argmax(self.model1.predict(image.reshape(1, 128, 128, 1)), axis=1)[0])
+        result3 = chr(64 + np.argmax(self.model3.predict(image.reshape(1, 128, 128, 1)), axis=1)[0])
         result_mnst = np.argmax(self.model_mnst.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
-        result_kuvw = np.argmax(self.model_kuvw.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
+        result_dru = np.argmax(self.model_dru.predict(image.reshape(1, 128, 128, 1)), axis=1)[0]
 
-        self.current_symbol = chr(result2 + 64)
-        if self.current_symbol not in list2: self.current_symbol = chr(result1 + 64)
+        if result3 in ['I', 'J', 'Z', 'Y', 'X']:
+            self.current_symbol = result3
+        elif result1 in list1:
+            self.current_symbol = result1
+        else:
+            self.current_symbol = result3
+
+        # self.current_symbol = result1
         if self.current_symbol == '@':
             self.current_symbol = 'blank'
-
-        # if self.current_symbol in ['K', 'U', 'V', 'W']: self.current_symbol = ['K', 'U', 'V', 'W'][result_kuvw]
-        if self.current_symbol in ['M', 'N', 'S', 'T']: self.current_symbol = ['M', 'N', 'S', 'T'][result_mnst]
+        #
+        if self.current_symbol in ['M', 'N', 'S', 'T']:
+            self.current_symbol = ['M', 'N', 'S', 'T'][result_mnst]
+        if self.current_symbol in ['D', 'R', 'U']:
+            self.current_symbol = ['D', 'R', 'U'][result_dru]
 
         if self.current_symbol == 'blank':
             for i in ascii_uppercase:
                 self.ct[i] = 0
         self.ct[self.current_symbol] += 1
-        if self.ct[self.current_symbol] > 50:
+        if self.ct[self.current_symbol] > 25:
             for i in ascii_uppercase:
                 if i == self.current_symbol:
                     continue
                 tmp = self.ct[self.current_symbol] - self.ct[i]
                 if tmp < 0:
                     tmp *= -1
-                if tmp <= 20:
+                if tmp <= 10:
                     self.ct['blank'] = 0
                     for i in ascii_uppercase:
                         self.ct[i] = 0
@@ -164,18 +171,34 @@ class Main:
                     self.sent += self.word
                     self.word = ""
             else:
-                if len(self.sent) > 16:
+                if len(self.sent) > 26:
                     self.sent = ""
                 self.blank_flag = 0
                 self.word += self.current_symbol
 
     def about(self):
-        pass
+        self.root1 = tk.Toplevel(self.root)
+        self.root1.title("About")
+        self.root1.protocol('WM_SELETE_WINDOW', self.destructor1)
+        self.root1.geometry("1100x780")
+
+        self.tx = tk.Label(self.root1)
+        self.tx.place(x=330, y=20)
+        self.tx.config(text="Efforts By", fg="red", font=("times new roman", 20, "bold"))
+
+        self.photo1 = tk.PhotoImage(file='pictures/adarsh.png')
+        self.member1 = tk.Label(self.root1, image=self.photo1)
+        self.member1.place(x=20, y=105)
+        self.txt1 = tk.Label(self.root1)
+        self.txt1.place(x=20, y=250)
+        self.txt1.config(text="Adarsh\n1711002", font=("times new roman", 15, "bold"))
+
 
     def start(self):
         self.access = True
 
     def stop(self):
+        self.current_symbol = 'Empty'
         self.access = False
 
     def reset(self):

@@ -29,7 +29,7 @@ ytest = pd.get_dummies(ytest).values
 
 model = keras.Sequential([
     keras.layers.Conv2D(
-        filters=32,
+        filters=64,
         kernel_size=3,
         activation='relu',
         input_shape=(128, 128, 1)
@@ -79,6 +79,23 @@ model = keras.Sequential([
     keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
     keras.layers.Dropout(0.5),
 
+    keras.layers.Conv2D(
+        filters=512,
+        kernel_size=3,
+        activation='relu',
+        input_shape=(128, 128, 1)
+    ),  # conv2d 5
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(
+        filters=512,
+        kernel_size=3,
+        activation='relu',
+        input_shape=(128, 128, 1)
+    ),  # conv2d 6
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    keras.layers.Dropout(0.5),
+
     keras.layers.Flatten(),
 
     keras.layers.Dense(
@@ -109,7 +126,7 @@ model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001),
 model.fit(x = Xtrain,
                y = ytrain,
                epochs=50,
-               batch_size = 64,
+               batch_size = 32,
                validation_data=(Xtest, ytest))
 
-model.save('Classifier_A_Z_2.h5')
+model.save('Classifier_A_Z.h5')

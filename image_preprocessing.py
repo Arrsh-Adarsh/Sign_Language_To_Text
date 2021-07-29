@@ -19,6 +19,6 @@ def processing(image):
 
 def predict(image):
     img = processing(image)
-    model = load_model('model/Classifier_A_Z_1.h5')
+    model = load_model('model/Classifier_A_Z_5.h5')
     result = np.argmax(model.predict(img), axis=1)[0]
     return result
