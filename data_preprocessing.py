@@ -8,6 +8,8 @@ BASEPATH = 'data/'
 sys.path.insert(0, BASEPATH)
 os.chdir(BASEPATH)
 
+# Loading images from A-Z and blank symbol for train
+
 Xtrain = [cv2.resize(np.asarray(cv2.imread('train/' + symbol + '/' + file, cv2.IMREAD_GRAYSCALE)), (128, 128),
                      interpolation=cv2.INTER_CUBIC) for symbol in string.ascii_uppercase for file in
           os.listdir('train/' + symbol)]
@@ -17,6 +19,7 @@ Xtrain1 = [cv2.resize(np.asarray(cv2.imread('train/@/' + file, cv2.IMREAD_GRAYSC
 ytrain1 = ['@' for _ in range(len(os.listdir('train/@')))]
 
 
+# Loading images from A-Z and blank symbol for test
 Xtest = [cv2.resize(np.asarray(cv2.imread('test/' + symbol + '/' + file, cv2.IMREAD_GRAYSCALE)), (128, 128),
                     interpolation=cv2.INTER_CUBIC) for symbol in string.ascii_uppercase for file in
          os.listdir('test/' + symbol)]
@@ -35,8 +38,11 @@ dfTest = pd.DataFrame()
 dfTrain['Symbol'] = ytrain
 dfTest['Symbol'] = ytest
 
+# Converting dataset to 4D NumPy Array
 Xtrain = np.expand_dims(np.asarray(Xtrain), -1)
 Xtest = np.expand_dims(np.asarray(Xtest), -1)
+
+# Storing the dataset
 
 folder = 'model 2/'
 if not os.path.exists(folder):

@@ -1,3 +1,5 @@
+# Loading libraries
+
 from tensorflow import keras
 # from keras.models import Sequential
 # from keras.layers import Convolution2D
@@ -16,6 +18,8 @@ sys.path.insert(0, BASEPATH)
 os.chdir(BASEPATH)
 
 size = 128
+
+# Loading dataset
 
 Xtrain = np.load('Xtrain.npy')
 Xtest = np.load('Xtest.npy')
@@ -84,14 +88,14 @@ model = keras.Sequential([
         kernel_size=3,
         activation='relu',
         input_shape=(128, 128, 1)
-    ),  # conv2d 5
+    ),  # conv2d 7
     keras.layers.BatchNormalization(),
     keras.layers.Conv2D(
         filters=512,
         kernel_size=3,
         activation='relu',
         input_shape=(128, 128, 1)
-    ),  # conv2d 6
+    ),  # conv2d 8
     keras.layers.BatchNormalization(),
     keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
     keras.layers.Dropout(0.5),
@@ -129,4 +133,5 @@ model.fit(x = Xtrain,
                batch_size = 32,
                validation_data=(Xtest, ytest))
 
+# Saving the trained model
 model.save('Classifier_A_Z.h5')

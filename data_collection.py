@@ -34,6 +34,9 @@ for i in string.ascii_uppercase:
 mode = 'train'
 directory = 'data/' + mode + '/'
 minValue = 70
+
+# Reserving Webcam
+
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     cap = cv2.VideoCapture(1)
@@ -60,6 +63,8 @@ while True:
     cv2.imshow('processed image', image)
     image = cv2.resize(image, (128, 128))
     img = image
+
+    # Storing the image in directory structure
 
     interrupt = cv2.waitKey(10)
     if interrupt & 0xFF == 27:  # esc key
@@ -176,6 +181,8 @@ while True:
     if interrupt & 0xFF == ord('z'):
         cv2.imwrite(directory + 'Z/' + str(len(os.listdir(directory + "/Z"))) + '.jpg', img)
         cv2.imwrite(directory + 'Z/' + str(len(os.listdir(directory + "/Z"))) + '.jpg', cv2.flip(img, 1))
+
+# Releasing the webcam
 
 cap.release()
 cv2.destroyAllWindows()

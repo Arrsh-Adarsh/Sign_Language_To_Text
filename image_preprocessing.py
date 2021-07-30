@@ -4,6 +4,8 @@ from tensorflow import keras
 from keras.models import load_model
 
 
+# Preprocessing the images
+
 def image_processing(image):
     minValue = 70
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

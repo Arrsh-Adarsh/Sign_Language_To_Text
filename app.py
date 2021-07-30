@@ -1,3 +1,5 @@
+# Loading libraries
+
 import cv2
 import operator
 import numpy as np
@@ -5,11 +7,12 @@ import tkinter as tk
 from string import ascii_uppercase
 from PIL import Image, ImageTk
 from keras.models import load_model
-
 from image_preprocessing import image_processing
 
+# Main Class (Driver Class)
 
 class Main:
+    # Constructor
     def __init__(self):
         self.vc = cv2.VideoCapture(0)
         self.models_directory = 'model/'
@@ -21,10 +24,14 @@ class Main:
         for i in ascii_uppercase:
             self.ct[i] = 0
 
+        # Loading Models
+
         self.model1 = load_model(self.models_directory + 'Classifier_A_Z_5.h5')
         self.model3 = load_model(self.models_directory + 'Classifier_A_Z_4.h5')
         self.model_mnst = load_model(self.models_directory + 'Classifier_mnst.h5')
         self.model_dru = load_model(self.models_directory + 'Classifier_dru.h5')
+
+        # Building User Interface
 
         self.root = tk.Tk()
         self.root.title('Sign Language to Text Converter')
@@ -39,6 +46,8 @@ class Main:
         self.T = tk.Label(self.root)
         self.T.place(x=410, y=17)
         self.T.config(text="ASL to TEXT", font=("times new roman", 30, "bold"), bg='#D9D9D9')
+
+        self.sb = tk.Scrollbar(self.root)
 
         self.T1 = tk.Label(self.root)
         self.T1.place(x=10, y=640)
@@ -90,6 +99,8 @@ class Main:
         print("Closing Application...")
         self.root1.destroy()
 
+    # Function to show video from webcam
+
     def display_video(self):
         ret, frame = self.vc.read()
         if ret:
@@ -118,6 +129,8 @@ class Main:
 
         self.root.after(10, self.display_video)
 
+    # Predicting and printing the Result
+
     def predicts(self, image):
         image = cv2.resize(image, (128, 128))
 
@@ -138,11 +151,12 @@ class Main:
         # self.current_symbol = result1
         if self.current_symbol == '@':
             self.current_symbol = 'blank'
-        #
         if self.current_symbol in ['M', 'N', 'S', 'T']:
             self.current_symbol = ['M', 'N', 'S', 'T'][result_mnst]
         if self.current_symbol in ['D', 'R', 'U']:
             self.current_symbol = ['D', 'R', 'U'][result_dru]
+
+        # Formatting Output String (word, sentence)
 
         if self.current_symbol == 'blank':
             for i in ascii_uppercase:
@@ -176,6 +190,8 @@ class Main:
                 self.blank_flag = 0
                 self.word += self.current_symbol
 
+    # Member details Window
+
     def about(self):
         self.root1 = tk.Toplevel(self.root)
         self.root1.title("About")
@@ -183,23 +199,63 @@ class Main:
         self.root1.geometry("1100x780")
 
         self.tx = tk.Label(self.root1)
-        self.tx.place(x=330, y=20)
-        self.tx.config(text="Efforts By", fg="red", font=("times new roman", 20, "bold"))
+        self.tx.place(x=450, y=20)
+        self.tx.config(text="MEMBERS", fg="red", font=("times new roman", 20, "bold"))
 
-        self.photo1 = tk.PhotoImage(file='pictures/adarsh.png')
+        self.photo1 = tk.PhotoImage(file='pictures/abhay.png')
         self.member1 = tk.Label(self.root1, image=self.photo1)
-        self.member1.place(x=20, y=105)
+        self.member1.place(x=80, y=120)
         self.txt1 = tk.Label(self.root1)
-        self.txt1.place(x=20, y=250)
-        self.txt1.config(text="Adarsh\n1711002", font=("times new roman", 15, "bold"))
+        self.txt1.place(x=120, y=330)
+        self.txt1.config(text="Abhay Kumar\n1711001", font=("times new roman", 15, "bold"))
 
+        self.photo2 = tk.PhotoImage(file='pictures/adarsh.png')
+        self.member2 = tk.Label(self.root1, image=self.photo2)
+        self.member2.place(x=420, y=120)
+        self.txt2 = tk.Label(self.root1)
+        self.txt2.place(x=460, y=330)
+        self.txt2.config(text="Adarsh Kumar\n1711002", font=("times new roman", 15, "bold"))
+
+        self.photo3 = tk.PhotoImage(file='pictures/amit.png')
+        self.member3 = tk.Label(self.root1, image=self.photo3)
+        self.member3.place(x=760, y=120)
+        self.txt3 = tk.Label(self.root1)
+        self.txt3.place(x=810, y=330)
+        self.txt3.config(text="Amit Oraon\n1711003", font=("times new roman", 15, "bold"))
+
+        self.photo4 = tk.PhotoImage(file='pictures/ani.png')
+        self.member4 = tk.Label(self.root1, image=self.photo4)
+        self.member4.place(x=80, y=420)
+        self.txt4 = tk.Label(self.root1)
+        self.txt4.place(x=110, y=630)
+        self.txt4.config(text="Anibrato Adhikari\n1711004", font=("times new roman", 15, "bold"))
+
+        self.photo5 = tk.PhotoImage(file='pictures/ranjan.png')
+        self.member5 = tk.Label(self.root1, image=self.photo5)
+        self.member5.place(x=420, y=420)
+        self.txt5 = tk.Label(self.root1)
+        self.txt5.place(x=440, y=630)
+        self.txt5.config(text="Ranjan Kr. Choubey\n1711025", font=("times new roman", 15, "bold"))
+
+        self.photo6 = tk.PhotoImage(file='pictures/tanveer.png')
+        self.member6 = tk.Label(self.root1, image=self.photo6)
+        self.member6.place(x=760, y=420)
+        self.txt6 = tk.Label(self.root1)
+        self.txt6.place(x=780, y=630)
+        self.txt6.config(text="Tanveer Azam Ansari\n1711038", font=("times new roman", 15, "bold"))
+
+    # To start the prediction
 
     def start(self):
         self.access = True
 
+    # To stop the prediction
+
     def stop(self):
         self.current_symbol = 'Empty'
         self.access = False
+
+    # To Reset the predicted strings
 
     def reset(self):
         self.sent = ''
@@ -207,6 +263,8 @@ class Main:
         self.current_symbol = 'Empty'
         self.access = False
 
+
+# Making Object Of Main Class and Excuting
 
 print('Application Starting...')
 start = Main()

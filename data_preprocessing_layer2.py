@@ -8,7 +8,7 @@ BASEPATH = 'data/'
 sys.path.insert(0, BASEPATH)
 os.chdir(BASEPATH)
 
-# For  {M, N, S, T}
+# Loading images and converting to dataset For  {M, N, S, T}
 
 Xtrain = [cv2.resize(np.asarray(cv2.imread('train/' + symbol + '/' + file, cv2.IMREAD_GRAYSCALE)), (128, 128),
                      interpolation=cv2.INTER_CUBIC) for symbol in ['M', 'N', 'S', 'T'] for file in
@@ -20,7 +20,7 @@ Xtest = [cv2.resize(np.asarray(cv2.imread('test/' + symbol + '/' + file, cv2.IMR
          os.listdir('test/' + symbol)]
 ytest = [symbol for symbol in ['M', 'N', 'S', 'T'] for _ in range(len(os.listdir('test/' + symbol)))]
 
-# For {D, R, U}
+#  Loading images and converting to datasetFor {D, R, U}
 
 # Xtrain = [cv2.resize(np.asarray(cv2.imread('train/' + symbol + '/' + file, cv2.IMREAD_GRAYSCALE)), (128, 128),
 #                      interpolation=cv2.INTER_CUBIC) for symbol in ['D', 'R', 'U'] for file in
@@ -39,6 +39,8 @@ dfTest['Symbol'] = ytest
 
 Xtrain = np.expand_dims(np.asarray(Xtrain), -1)
 Xtest = np.expand_dims(np.asarray(Xtest), -1)
+
+# Saving the dataset
 
 folder = 'layer 2/mnst/'                    # For {M, N, S, T}
 
